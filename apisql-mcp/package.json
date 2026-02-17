@@ -1,0 +1,32 @@
+{
+  "name": "apisql-mcp",
+  "version": "0.2.0",
+  "description": "MCP server for executing SQL queries via API SQL service",
+  "main": "bin/index.js",
+  "bin": {
+    "apisql-mcp": "bin/index.js"
+  },
+  "keywords": ["mcp", "sql", "database", "api"],
+  "author": "apisql <dev@apisql.cn>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.24.3",
+    "@types/node": "^22.14.0",
+    "axios": "^1.8.4",
+    "commander": "^14.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/apisql-mcp.git"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ]
+}
