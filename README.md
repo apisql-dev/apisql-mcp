@@ -24,13 +24,72 @@
 - **多种传输模式** —— 支持 STDIO 和 Streamable HTTP 传输方式
 
 
+## 🏗️ 整体架构说明
+
+
+
+```mermaid
+graph LR
+    %% 定义节点
+    A["🤖 MCP 客户端<br/>(Claude 等)"]
+    B["🔌 apiSQL-mcp<br/>(本工具)"]
+    C["☁️ apiSQL 平台<br/>(API 接口)"]
+    
+    %% 定义内网区域
+    subgraph Internal["🔒 用户内网环境"]
+        direction LR
+        D["🛡️ apiSQL 网关<br/>(内网)"]
+        E[("🗄️ 数据库<br/>(内网)")]
+    end
+
+    %% 定义连线
+    A <-->|MCP 协议| B
+    B <-->|HTTPS| C
+    C <-->|MQTT| D
+    D <-->|TCP| E
+    
+    %% 样式美化 (可选)
+    style Internal fill:#f4f6f8,stroke:#d0d7de,stroke-width:2px,stroke-dasharray: 5 5
+```
+
+## 🗄️ 支持的数据库
+
+| 数据库 | 类型 | 说明 |
+|--------|------|------|
+| MySQL / MariaDB | OLTP | 完整支持，包括存储过程 |
+| PostgreSQL | OLTP | 完整支持，包括 JSON 操作 |
+| SQL Server | OLTP | 支持 T-SQL |
+| Oracle | OLTP | 支持 11g、12c、19c、20c+ |
+| SQLite | 嵌入式 | 文件型数据库 |
+| StarRocks | OLAP | 高性能分析型数据库 |
+| Apache Doris | OLAP | 实时分析型数据库 |
+| TiDB | 分布式 | MySQL 兼容的分布式 SQL |
+| DuckDB | 分析型 | 进程内分析型数据库 |
+| OceanBase | 分布式 | 分布式关系型数据库 |
+| Trino / Presto | 查询引擎 | 联邦查询支持 |
+| Dameng | 国产信创 | 达梦数据库 |
+| 自定义 JDBC | 多种 | 任何 JDBC 兼容的数据库 |
+
+## ⚠️ 安全提醒
+
+**apiSQL-mcp 提供完整的数据库访问权限，包括结构修改和数据操作。请务必遵循以下安全准则：**
+
+1. **最小权限原则**：
+   - 创建具有最小所需权限的专用数据库用户
+   - 生产环境使用只读访问权限
+   - 通过视图限制对特定数据库/表的访问
+
+2. **推荐配置**：
+   - 从测试环境开始
+   - 启用 apiSQL平台 的访问控制策略（IP 白名单、API Key）
+
 
 
 ## 🚀 快速开始
 
 ### 一分钟上手
 
-1、以ChatBox配置为例，点 设置 -> MCP
+1、以ChatBox配置为例： 设置 -> MCP
 ![设置](./images/001.png)
 
 
@@ -110,7 +169,7 @@
 - Node.js >= 18.0.0
 - apiSQL 账号（在 [open.apisql.cn](https://open.apisql.cn) 注册）和 安装 [apiSQL网关](https://docs.apisql.cn/apisql/010@%E5%85%A5%E9%97%A8/020@%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/readme.html) 连接数据库 
 
-### 安装
+### 运行
 
 ```bash
 # 全局安装（可选）
@@ -119,7 +178,6 @@ npm install -g apisql-mcp
 # 或直接通过 npx 运行
 npx -y apisql-mcp
 ```
-
 
 
 ### 配置
@@ -141,7 +199,7 @@ npx -y apisql-mcp
 5. 创建访问控制策略，选择API Key 分配权限可访问SUDB
 6. 从策略页面复制 API URL 和 Key
 
-## 🔧 MCP 客户端配置
+## 🔧 MCP 客户端配置示例
 
 ### Claude Desktop / Claude Code
 
@@ -259,7 +317,7 @@ npx apisql-mcp --transport streamable-http --port 9090 --host 0.0.0.0
 
 然后配置 MCP 客户端连接到：
 ```
-http://localhost:9090
+http://localhost:9090/mcp
 ```
 
 可用选项：
@@ -275,7 +333,7 @@ http://localhost:9090
 {
   "name": "execute_sql",
   "arguments": {
-    "sc": "SELECT * FROM users LIMIT 10"
+    "sc": "SELECT * FROM user LIMIT 10"
   }
 }
 ```
@@ -320,88 +378,12 @@ http://localhost:9090
 - **结构**：`CREATE TABLE`、`ALTER TABLE`、`DROP TABLE`、`CREATE INDEX`
 - **存储过程**：执行存储过程和函数
 
-### 参数化查询
-
-apiSQL 支持使用 `:paramName` 语法的命名参数：
-
-```json
-{
-  "name": "execute_sql",
-  "arguments": {
-    "sc": "SELECT * FROM users WHERE age > :minAge AND status = :status",
-    "params": {
-      "minAge": 18,
-      "status": "active"
-    }
-  }
-}
-```
-
-## 🗄️ 支持的数据库
-
-| 数据库 | 类型 | 说明 |
-|--------|------|------|
-| MySQL / MariaDB | OLTP | 完整支持，包括存储过程 |
-| PostgreSQL | OLTP | 完整支持，包括 JSON 操作 |
-| SQL Server | OLTP | 支持 T-SQL |
-| Oracle | OLTP | 支持 11g、12c、19c、20c+ |
-| SQLite | 嵌入式 | 文件型数据库 |
-| StarRocks | OLAP | 高性能分析型数据库 |
-| Apache Doris | OLAP | 实时分析型数据库 |
-| TiDB | 分布式 | MySQL 兼容的分布式 SQL |
-| DuckDB | 分析型 | 进程内分析型数据库 |
-| OceanBase | 分布式 | 分布式关系型数据库 |
-| Trino / Presto | 查询引擎 | 联邦查询支持 |
-| Dameng | 国产信创 | 达梦数据库 |
-| 自定义 JDBC | 多种 | 任何 JDBC 兼容的数据库 |
-
-## 🏗️ 整体架构说明
-
-
-
-```mermaid
-graph LR
-    %% 定义节点
-    A["🤖 MCP 客户端<br/>(Claude 等)"]
-    B["🔌 apiSQL-mcp<br/>(本工具)"]
-    C["☁️ apiSQL 平台<br/>(API 接口)"]
-    
-    %% 定义内网区域
-    subgraph Internal["🔒 用户内网环境"]
-        direction LR
-        D["🛡️ apiSQL 网关<br/>(内网)"]
-        E[("🗄️ 数据库<br/>(内网)")]
-    end
-
-    %% 定义连线
-    A <-->|MCP 协议| B
-    B <-->|HTTPS| C
-    C <-->|MQTT| D
-    D <-->|TCP| E
-    
-    %% 样式美化 (可选)
-    style Internal fill:#f4f6f8,stroke:#d0d7de,stroke-width:2px,stroke-dasharray: 5 5
-```
-
-## ⚠️ 安全最佳实践
-
-**apiSQL-mcp 提供完整的数据库访问权限，包括结构修改和数据操作。请务必遵循以下安全准则：**
-
-1. **最小权限原则**：
-   - 创建具有最小所需权限的专用数据库用户
-   - 生产环境使用只读访问权限
-   - 通过视图限制对特定数据库/表的访问
-
-2. **推荐配置**：
-   - 从测试环境开始
-   - 启用 apiSQL 的访问控制策略（IP 白名单、API Key）
-
 
 ## 🛠️ 开发指南
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/apisql-mcp.git
+git clone https://github.com/apisql-dev/apisql-mcp.git
 cd apisql-mcp
 
 # 安装依赖

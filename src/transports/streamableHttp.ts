@@ -26,6 +26,13 @@ export async function runStreamableHttpTransport(
       return;
     }
 
+    // 只处理 /mcp 路径的请求
+    if (req.url !== '/mcp') {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Not Found' }));
+      return;
+    }
+
     // 添加认证信息到请求对象
     const authHeader = req.headers.authorization;
     if (authHeader) {
@@ -49,7 +56,7 @@ export async function runStreamableHttpTransport(
   // 启动 HTTP 服务器
   return new Promise<void>((resolve, reject) => {
     httpServer.listen(port, host, () => {
-      console.error(`SQL MCP server running on http://${host}:${port}`);
+      console.error(`SQL MCP server running on http://${host}:${port}/mcp`);
       console.error(`Transport: streamable-http`);
       console.error(`Press Ctrl+C to stop`);
       resolve();

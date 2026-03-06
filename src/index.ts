@@ -9,7 +9,7 @@ const program = new Command();
 program
   .name('apisql-mcp')
   .description('MCP server for executing SQL queries via API SQL service')
-  .version('0.2.0')
+  .version('0.3.0')
   .option('-t, --transport <type>', 'Transport type (stdio, streamable-http)', 'stdio')
   .option('-p, --port <number>', 'HTTP server port (only for streamable-http)', '9090')
   .option('-h, --host <host>', 'HTTP server host (only for streamable-http)', '127.0.0.1')
