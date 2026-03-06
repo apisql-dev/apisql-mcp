@@ -6,7 +6,7 @@
   "bin": {
     "apisql-mcp": "bin/index.js"
   },
-  "keywords": ["mcp", "sql", "database", "api"],
+  "keywords": ["mcp", "sql", "database", "mysql", "postgresql", "oracle", "sqlserver", "sqlite", "starrocks", "apisql", "model-context-protocol", "ai", "llm"],
   "author": "apisql <dev@apisql.cn>",
   "license": "MIT",
   "dependencies": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/apisql-mcp.git"
+    "url": "git+https://github.com/apisql-dev/apisql-mcp.git"
   },
   "files": [
     "bin",
