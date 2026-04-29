@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/apisql-dev-apisql-mcp-badge.png)](https://mseep.ai/app/apisql-dev-apisql-mcp)
+
 # apiSQL-MCP
 
 [![npm version](https://img.shields.io/npm/v/apisql-mcp.svg)](https://www.npmjs.com/package/apisql-mcp)
